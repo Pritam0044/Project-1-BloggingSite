@@ -5,8 +5,7 @@ const blogModel = require("../Models/blogModel");
 let authentication = async function (req, res, next) {
   try {
     let token = req.headers["x-api-key"];
-    // console.log(token)
-    // console.log(req.body.authorId)
+    
     if (!token) {
       return res.status(401).send({ status: false, data: "Token not present" });
     }
@@ -19,6 +18,9 @@ let authentication = async function (req, res, next) {
     res.status(401).send({ status: false, data: "Authentication failed" });
   }
 };
+
+
+
 
 let authorization = async function (req, res, next) {
   try {
@@ -45,7 +47,7 @@ let authorization = async function (req, res, next) {
     if (!author) {
       return res
         .status(404)
-        .send({ status: false, data: "no such author exists" });
+        .send({ status: false, data: "No such author exists" });
     }
     next();
   } catch (err) {

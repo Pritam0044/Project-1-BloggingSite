@@ -5,7 +5,7 @@ const authorModel = require("../Models/authorModel");
 const CreateBlog = async function (req, res) {
   try {
     let blog = req.body;//we receive data as a object {}
-    console.log(blog);
+    // console.log(blog);
     //handling edge cases
     if (Object.keys(blog).length == 0) {   //Object.keys(blog).length = 0 
       return res
@@ -70,12 +70,15 @@ const CreateBlog = async function (req, res) {
   }
 };
 
+
+
+
 //GET /blogs
 const GetData = async function (req, res) {
   try {
     let query = req.query;//as a object{authorId:surbhi,category:math}
 
-    console.log(query);
+    // console.log(query);
     let GetRecord = await blogModel.find({
       $and: [{ isPublished: true, isDeleted: false, ...query }], //authorid:surbhi,category:math
     }).populate("authorId")
@@ -90,6 +93,8 @@ const GetData = async function (req, res) {
   }
 };
 
+//update blog
+
 const updateBlog = async function (req, res) {
   try {
     const blogId = req.params.blogId; 
@@ -102,7 +107,7 @@ const updateBlog = async function (req, res) {
     if (details.category || details.authorId){
         return res.status(400).send({
             status: false,
-            data: "You cannot change authorId or category",
+            data: "You cannot change without authorId or category",
         });
     }
     const updatedDetails = await blogModel.findOneAndUpdate(
@@ -114,7 +119,7 @@ const updateBlog = async function (req, res) {
         tags: details.tags,
         subcategory: details.subcategory},
         isPublished: true,
-        publishedAt: new Date(),
+        publishedAt: Date.now(),
       },
       { new: true, upsert: true }
     );
@@ -147,9 +152,10 @@ const deleteBlog = async function (req, res) {
         .status(404)
         .send({ status: false, data: "Blog already deleted" });
     }
+
     let deleteBlogs = await blogModel.findOneAndUpdate(
       { _id: blogsId },
-      { $set: { isDeleted: true, deletedAt: new Date() } },
+      { $set: { isDeleted: true, deletedAt: Date.now() } },
       { new: true }
     );
     res.status(200).send({ status: true, data: deleteBlogs });
@@ -162,42 +168,36 @@ const deleteBlog = async function (req, res) {
 const deleteQuery = async function (req, res) {
   try {
     let data = req.query;//as a object //{ body: 'all is well' }
-    console.log(data);
+    // console.log(data);
     if (Object.keys(data).length == 0) {
       return res
         .status(400)
         .send({ status: false, data: "enter details for delete blogs" });
     }
-    const filterbyquery = await blogModel.find(data);
-    if (filterbyquery.length === 0) {
-      return res.status(404).send({ status: false, data: "No Such blogs" });
-    }
-    let decodedToken = req.decodedToken;//{ authorId: '626831fea06a453051dc3c4d', iat: 1651252153 }
-    console.log(decodedToken);
-    data.authorId = decodedToken.authorId;//{ body: 'all is well', authorId: '626831fea06a453051dc3c4d' }
-    console.log(data);
+   
     let authorBlog = await blogModel.find(data);
+    // console.log(authorBlog)
     if (Object.keys(authorBlog).length == 0) {
       return res
-        .status(401)
+        .status(404)
         .send({
           status: false,
           data: "no such blogs found with your provided details authorized with your login credentials ",
         });
     }
-    console.log(authorBlog);
-    data.isDeleted = false;
-    console.log(data);//{body: 'all is well',authorId: '626833cda06a453051dc3c53',isDeleted: false}
+// console.log(authorBlog[0].isDeleted)
 
+    
+    if(authorBlog[0].isDeleted == true){
+      return res.status(404).send({status:false,data:"Blog already deleted"})
+  }
     const deleteDetails = await blogModel.updateMany(
       data,
       { $set: { isDeleted: true, deletedAt: new Date() } },
       { new: true }
     );
-    if(deleteDetails.modifiedCount==0){
-        return res.status(404).send({status:false,data:"Blog already deleted"})
-    }
-    // console.log(deleteDetails)
+    
+
     res.status(200).send({ status: true, data: deleteDetails });
   } catch (err) {
     console.log("This is the error 1", err.massage);

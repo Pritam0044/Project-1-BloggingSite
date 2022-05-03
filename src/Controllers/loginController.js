@@ -7,13 +7,13 @@ const authorLogin = async function (req, res) {
     if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(req.body.email)) {
       return res
         .status(400)
-        .send({ status: false, data: "plz enter the valid Email" });
+        .send({ status: false, data: "Please enter the valid Email" });
     }
     let authorPassword = req.body.password;
     if (req.body.password.trim().length <= 6) {
       return res
         .status(400)
-        .send({ status: false, data: "plz enter the valid Password" });
+        .send({ status: false, data: "Please enter the valid Password" });
     }
     let isAuthor = await authorModel.findOne({
       email: authorEmail,
@@ -22,7 +22,7 @@ const authorLogin = async function (req, res) {
     if (!isAuthor) {
       return res
         .status(404)
-        .send({ status: false, data: "No such author exists" });
+        .send({ status: false, data: "No such author exists, please enter correct credentials." });
     }
     let token = jwt.sign(
       {

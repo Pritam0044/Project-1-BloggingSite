@@ -3,6 +3,7 @@ const authorModel = require("../Models/authorModel");
 const createAuthor = async function (req, res) {
   try {
     let data = req.body;
+
     if (!data.fname) {
       return res.status(400).send({ status: false, data: "First Name is required" });
     }
@@ -25,7 +26,7 @@ const createAuthor = async function (req, res) {
     if (["Mr", "Mrs", "Miss"].indexOf(data.title) == -1) {
       return res.status(400).send({
         status: false,
-        data: "Enter a valid title Mr or Mrs or Miss ",
+        data: "Enter a valid title 'Mr' or 'Mrs' or 'Miss' ",
       });
     }
     if (!data.email) {
@@ -36,14 +37,16 @@ const createAuthor = async function (req, res) {
     if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(data.email)) {
       return res
         .status(400)
-        .send({ status: false, data: "plz enter a valid Email" });
+        .send({ status: false, data: "Please enter a valid Email" });
     }
+
     let checkIfemailExist = await authorModel.find({ email: data.email });
     if (checkIfemailExist.length != 0) {
       return res
         .status(400)
         .send({ status: false, data: "email already exist" });
     }
+
     if (!data.password) {
       return res
         .status(400)
@@ -52,7 +55,7 @@ const createAuthor = async function (req, res) {
     if (data.password.trim().length <= 6) {
       return res
         .status(400)
-        .send({ status: false,data: "plz enter the valid Password" });
+        .send({ status: false,data: "Please enter the valid Password" });
     }
     let saved = await authorModel.create(data);
     res.status(201).send({ status: true, data: saved });
