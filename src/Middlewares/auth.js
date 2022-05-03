@@ -5,6 +5,8 @@ const blogModel = require("../Models/blogModel");
 let authentication = async function (req, res, next) {
   try {
     let token = req.headers["x-api-key"];
+    // console.log(token)
+    // console.log(req.body.authorId)
     if (!token) {
       return res.status(401).send({ status: false, data: "Token not present" });
     }

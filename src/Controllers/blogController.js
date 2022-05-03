@@ -118,7 +118,7 @@ const updateBlog = async function (req, res) {
       },
       { new: true, upsert: true }
     );
-    res.status(200).send({ status: true, data: updatedDetails });
+    res.status(200).send({ status: true,  message: updatedDetails, data: updatedDetails });
   } catch (err) {
     console.log("This is the error 1", err.message);
     res.status(500).send({ status: false, data: err.message });
