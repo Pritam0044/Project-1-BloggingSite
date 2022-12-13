@@ -55,7 +55,7 @@ const createAuthor = async function (req, res) {
     if (data.password.trim().length <= 6) {
       return res
         .status(400)
-        .send({ status: false,data: "Please enter the valid Password" });
+        .send({ status: false,data: "Please enter a password min length of 6 characters." });
     }
     let saved = await authorModel.create(data);
     res.status(201).send({ status: true, data: saved });
